@@ -24,6 +24,6 @@ int fs_write(fs_file_t *file, const char *data);
 void fs_list_files(void);
 void fs_write_file(const char *name, const char *data);
 void fs_remove(const char *name);
-int fs_load_content(fs_file_t *file);   // nou, îl folosim la cat
-
+int fs_load_content(fs_file_t *file);   // nou, îl folosim la cat  // nou, îl folosim la cat
+void fs_sync_table(void);  
 #endif

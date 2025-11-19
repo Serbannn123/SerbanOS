@@ -44,7 +44,8 @@ dirs:
 # ===== Build image: bootloader (512B) + kernel =====
 $(BUILDDIR)/os-image.bin: $(BUILDDIR)/boot.bin $(BUILDDIR)/kernel.bin
 	cat $(BUILDDIR)/boot.bin $(BUILDDIR)/kernel.bin > $(BUILDDIR)/os-image.bin
-	truncate -s %512 $(BUILDDIR)/os-image.bin
+	# facem "hard disk-ul" destul de mare (16 MiB)
+	truncate -s 16M $(BUILDDIR)/os-image.bin
 
 # ===== Bootloader raw bin =====
 # Calculăm automat numărul de sectoare al kernelului și îl dăm la NASM

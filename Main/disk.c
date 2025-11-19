@@ -27,6 +27,15 @@ static unsigned char ata_status(void)
     return inb(ATA_REG_STATUS);
 }
 
+void ata_wait_400ns() {
+    // Citim portul 0x1F7 (Status) sau 0x3F6 (Alternate Status) de 4 ori
+    // Asta creează o întârziere de aprox 400ns necesară controllerului
+    inb(0x1F7);
+    inb(0x1F7);
+    inb(0x1F7);
+    inb(0x1F7);
+}
+
 // așteaptă până când BSY=0 sau expiră
 static int ata_wait_not_busy(void)
 {
@@ -87,6 +96,8 @@ int ata_read_sector(uint32_t lba, void *buffer)
     for (int i = 0; i < 256; i++) {
         buf[i] = inw(ATA_REG_DATA);
     }
+
+    ata_wait_400ns();
 
     return 1;
 }
