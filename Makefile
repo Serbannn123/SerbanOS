@@ -112,10 +112,11 @@ bundle_relevant: copy_relevant
 # ===== Rulează QEMU cu resurse limitate =====
 run: $(BUILDDIR)/os-image.bin bundle_relevant
 	qemu-system-i386 \
-	  -drive format=raw,file=$(BUILDDIR)/os-image.bin \
 	  -m 16M \
 	  -smp 1 \
-	  -serial mon:stdio 
+      -drive file=$(BUILDDIR)/os-image.bin,format=raw,if=ide,index=0 \
+      -drive file=hdd.img,format=raw,if=ide,index=1 \
+	  -serial mon:stdio
 
 # ===== Curățare =====
 clean:

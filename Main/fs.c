@@ -3,7 +3,7 @@
 #include "util.h"
 #include "disk.h"
 
-#define FS_TABLE_LBA 20
+#define FS_TABLE_LBA 0
 #define FS_MAX_ONDISK_FILES 8
 
 fs_file_t files[MAX_FILE_NUMBER];
@@ -18,7 +18,7 @@ typedef struct
 
 void fs_init(void)
 {
-    // 1) Resetăm structurile din RAM
+    // 1) Reset structuri din RAM
     for (int i = 0; i < MAX_FILE_NUMBER; i++) {
         files[i].used      = 0;
         files[i].on_disk   = 0;
@@ -28,33 +28,32 @@ void fs_init(void)
         files[i].size      = 0;
     }
 
-    // 2) Încercăm să citim tabelul de pe disc
-    disk_fs_entry_t table[FS_MAX_ONDISK_FILES];
-    
-    // citim 1 sector la LBA FS_TABLE_LBA
-    if (!ata_read_sector(FS_TABLE_LBA, (unsigned char *)table)) {
+    // 2) Citim sectorul cu tabela de pe disc
+    unsigned char sector[512];
+
+    if (!ata_read_sector(FS_TABLE_LBA, sector)) {
         print("FS: disk read failed, using RAM defaults.\n");
-    goto ram_defaults;
-}
+        goto ram_defaults;
+    }
+
+    // interpretăm sectorul ca un vector de disk_fs_entry_t
+    disk_fs_entry_t *table = (disk_fs_entry_t *)sector;
 
     int any_used = 0;
 
-    for (int i = 0; i < FS_MAX_ONDISK_FILES && i < MAX_FILE_NUMBER; i++) 
-    {
-        if (table[i].used) 
-        {
+    for (int i = 0; i < FS_MAX_ONDISK_FILES && i < MAX_FILE_NUMBER; i++) {
+        if (table[i].used) {
             any_used = 1;
 
             files[i].used      = 1;
-            files[i].on_disk   = 1;                    // MARCĂM că are date pe disc
-            files[i].lba_start = table[i].lba_start;   // de aici citim sectorul
+            files[i].on_disk   = 1;
+            files[i].lba_start = table[i].lba_start;
 
-            // copiem numele
             strcpy(table[i].name, files[i].name, MAX_FILE_NAME - 1);
             files[i].name[MAX_FILE_NAME - 1] = '\0';
 
             files[i].size = table[i].size;
-            files[i].data[0] = '\0';                   // încă nu am citit conținutul
+            files[i].data[0] = '\0';
         }
     }
 
@@ -63,15 +62,10 @@ void fs_init(void)
         return;
     }
 
-    // 3) Dacă nu am găsit nimic pe disc, avem fallback-ul RAM-only ca înainte
-    print("FS: no table on disk, using RAM defaults.\n");
-
-    ram_defaults:
-
+ram_defaults:
     print("FS: no table on disk, using RAM defaults.\n");
 
     fs_file_t *f1 = fs_create("readme.txt");
-
     if (f1) {
         fs_write(f1,
             "SerbanOS RAM FS\n"
@@ -89,6 +83,7 @@ void fs_init(void)
         );
     }
 }
+
 
 fs_file_t *fs_create(const char *name)
 {

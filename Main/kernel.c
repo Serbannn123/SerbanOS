@@ -6,6 +6,41 @@
 #include "fs.h"
 #include "util.h"
 
+void test_ata_rw(void)
+{
+    unsigned char writebuf[512];
+    unsigned char readbuf[512];
+
+    // umplem bufferul de scris cu un pattern cunoscut
+    for (int i = 0; i < 512; i++) {
+        writebuf[i] = (unsigned char)(i & 0xFF);  // 0,1,2,3,...,255,0,1,...
+    }
+
+    printf("ATA: writing test sector...\n");
+    if (!ata_write_sector(50, writebuf)) {   // LBA 50 -> zona safe
+        printf("ATA: write failed!\n");
+        return;
+    }
+
+    // curățăm readbuf ca să fim siguri că nu e deja ok din întâmplare
+    for (int i = 0; i < 512; i++) {
+        readbuf[i] = 0;
+    }
+
+    printf("ATA: reading test sector...\n");
+    if (!ata_read_sector(50, readbuf)) {
+        printf("ATA: read failed!\n");
+        return;
+    }
+
+    // verificăm câțiva bytes
+    printf("ATA: first 8 bytes read back: ");
+    for (int i = 0; i < 8; i++) {
+        printf("%x ", (unsigned int)readbuf[i]);
+    }
+    printf("\n");
+}
+
 // kernel.c
 void kmain(void)
 {
@@ -26,12 +61,9 @@ void kmain(void)
     asm volatile("sti");   // enable interrupts
 
     // Test tastatură
-    unsigned char  buf[128];
+    unsigned char  buf[512];
 
-    ata_read_sector(0, buf);  // LBA 0: MBR/boot sector
-
-    printf("First bytes of LBA0: %x %x %x %x\n",
-           buf[0], buf[1], buf[2], buf[3]);
+    test_ata_rw();
 
     // buclă infinită
     for (;;) {

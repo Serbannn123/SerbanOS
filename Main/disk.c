@@ -90,3 +90,32 @@ int ata_read_sector(uint32_t lba, void *buffer)
 
     return 1;
 }
+
+int ata_write_sector(uint32_t lba, const void *buffer)
+{
+    const unsigned short *buf = (const unsigned short *)buffer;
+
+    if (!ata_wait_not_busy()) {
+        printf("ATA: timeout BSY on write\n");
+        return 0;
+    }
+
+    outb(ATA_REG_HDDEVSEL, 0xE0 | ((lba >> 24) & 0x0F));
+    outb(ATA_REG_SECCOUNT0, 1);
+    outb(ATA_REG_LBA0, (unsigned char)(lba & 0xFF));
+    outb(ATA_REG_LBA1, (unsigned char)((lba >> 8) & 0xFF));
+    outb(ATA_REG_LBA2, (unsigned char)((lba >> 16) & 0xFF));
+
+    outb(ATA_REG_COMMAND, 0x30); // WRITE SECTORS
+
+    if (!ata_wait_drq()) {
+        printf("ATA: DRQ not set on write\n");
+        return 0;
+    }
+
+    for (int i = 0; i < 256; i++) {
+        outw(ATA_REG_DATA, buf[i]);
+    }
+
+    return 1;
+}

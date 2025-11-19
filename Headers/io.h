@@ -32,10 +32,20 @@ static inline unsigned short inw(unsigned short port)
     );
     return ret;
 }
+
+static inline void outw(unsigned short port, unsigned short val)
+{
+    __asm__ __volatile__ (
+        "outw %0, %1"
+        :
+        : "a"(val), "Nd"(port)
+    );
+}
 #else
 // Pentru IntelliSense doar declarații goale, fără asm
 static inline void          outb(unsigned short port, unsigned char val);
 static inline unsigned char inb(unsigned short port);
+static inline void          outw(unsigned short port, unsigned short val);
 #endif
 
 #endif
