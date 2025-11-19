@@ -21,6 +21,17 @@ static inline unsigned char inb(unsigned short port)
     );
     return ret;
 }
+
+static inline unsigned short inw(unsigned short port)
+{
+    unsigned short ret;
+    __asm__ __volatile__ (
+        "inw %1, %0"
+        : "=a"(ret)
+        : "Nd"(port)
+    );
+    return ret;
+}
 #else
 // Pentru IntelliSense doar declarații goale, fără asm
 static inline void          outb(unsigned short port, unsigned char val);

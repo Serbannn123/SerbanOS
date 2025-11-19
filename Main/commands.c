@@ -118,7 +118,7 @@ void ls_command(const char *args)
 
 void cat_command(const char *args)
 {
-    if(!args)
+    if (!args)
         return;
 
     while (*args == ' ')
@@ -131,13 +131,17 @@ void cat_command(const char *args)
 
     fs_file_t *file = fs_find(args);
 
-    if(!file)
-    {
+    if (!file) {
         printf("File not found\n");
         return;
     }
 
-    printf("%s\n",file->data);
+    if (!fs_load_content(file)) {
+        printf("Error reading file content\n");
+        return;
+    }
+
+    printf("%s\n", file->data);
 }
 
 void write_command(const char *args)
@@ -158,12 +162,21 @@ void write_command(const char *args)
 
 void remove_command(const char *args)
 {
-    if(!args || *args == '\0')
-    {
-        printf("Use: rm + filename\n");
+    if (!args) {
+        printf("Use: rm <filename>\n");
+        return;
+    }
+
+    // sar peste spațiile de la început
+    while (*args == ' ')
+        args++;
+
+    if (*args == '\0') {
+        printf("Use: rm <filename>\n");
         return;
     }
 
     fs_remove(args);
 }
+
 

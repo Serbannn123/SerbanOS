@@ -26,7 +26,12 @@ void kmain(void)
     asm volatile("sti");   // enable interrupts
 
     // Test tastatură
-    char buf[128];
+    unsigned char  buf[128];
+
+    ata_read_sector(0, buf);  // LBA 0: MBR/boot sector
+
+    printf("First bytes of LBA0: %x %x %x %x\n",
+           buf[0], buf[1], buf[2], buf[3]);
 
     // buclă infinită
     for (;;) {

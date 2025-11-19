@@ -22,7 +22,8 @@ OBJS = \
   $(BUILDDIR)/keyboard.o \
   $(BUILDDIR)/commands.o \
   $(BUILDDIR)/fs.o \
-  $(BUILDDIR)/util.o
+  $(BUILDDIR)/util.o \
+  $(BUILDDIR)/disk.o
 
 # Fișiere relevante (cod) care vor fi copiate în Relevant_files
 RELEVANT_SRCS = \
@@ -84,6 +85,9 @@ $(BUILDDIR)/fs.o: $(SRCDIR)/fs.c $(INCDIR)/fs.h
 
 $(BUILDDIR)/util.o: $(SRCDIR)/util.c $(INCDIR)/util.h
 	$(CC) $(CFLAGS) -c $(SRCDIR)/util.c -o $(BUILDDIR)/util.o
+
+$(BUILDDIR)/disk.o: $(SRCDIR)/disk.c $(INCDIR)/disk.h $(INCDIR)/io.h
+	$(CC) $(CFLAGS) -c $(SRCDIR)/disk.c -o $(BUILDDIR)/disk.o
 
 # ===== Copiere fișiere relevante =====
 copy_relevant:
