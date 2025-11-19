@@ -60,20 +60,21 @@ void first_word(const char *src, char *dest, int dest_size)
     dest[i] = '\0';
 }
 
-char *caps(char *s)
+char *caps(const char *s)
 {
+    static char buf[64];
     int i = 0;
 
-    while(*(s+i) != '\0')
-    {
-        if(*(s+i) >= 'a' && *(s+i) <= 'z')
-        {
-            *(s+i) = *(s+i) - 32;
-        }
+    while (s[i] != '\0' && i < 63) {
+        if (s[i] >= 'a' && s[i] <= 'z')
+            buf[i] = s[i] - 32;
+        else
+            buf[i] = s[i];
         i++;
     }
 
-    return s;
+    buf[i] = '\0';
+    return buf;
 }
 
 void strcpy(const char *s,char *d, int len)

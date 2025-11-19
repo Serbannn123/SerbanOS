@@ -49,12 +49,17 @@ void eval_command(char *input)
 
 void help_command(const char *args)
 {
-    printf("All commands available:\n");
-    printf("HELP      - display all comands available\n");
-    printf("CLEAR     - clear screen\n");
-    printf("ECHO      - display a message\n");
-    printf("REBOOT    - reboot system");
-    printf("\n");
+    for(int i = 0; i < NUM_COMMANDS; i++)
+    {
+        printf("%s", caps(commands[i].name));
+
+        for(int j = 0;j<10-len(commands[i].name);j++)
+        {
+            printf(" ");
+        }
+
+        printf("%s\n",commands[i].help);
+    }
 }
 
 void echo_command(const char *args)
