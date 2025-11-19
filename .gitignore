@@ -1,0 +1,13 @@
+Build/
+
+.vscode/
+
+Relevant_files/
+
+zold/
+
+*.exe
+*.out
+*.o
+*.obj
+*.elf
